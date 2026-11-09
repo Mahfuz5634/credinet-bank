@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrediNet Bank - Retail Loan Processing Portal</title>
+    <!-- Tailwind CSS (Offline-ready Local + CDN Fallback) -->
+    <script src="{{ url_for('static', filename='js/tailwind.min.js') }}"></script>
+    <script>if (!window.tailwind) document.write('<script src="https://cdn.tailwindcss.com"><\/script>');</script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Top Bank Navigation Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            
+            <!-- Brand & Branch Info -->
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-lg bg-blue-700 flex items-center justify-center text-white text-base shadow-sm">
+                    <i class="fa-solid fa-landmark"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h1 class="text-base font-bold text-slate-900 leading-tight">CrediNet Bank</h1>
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">Retail Loan Portal</span>
+                    </div>
+                    <p class="text-xs text-slate-500">Automated Credit Risk & Loan Origination System</p>
+                </div>
+            </div>
+
+            <!-- Officer / Student Info in Header -->
+            <div class="flex items-center space-x-3">
+                <div class="text-right">
+                    <div class="text-xs font-bold text-slate-900 leading-tight">Md. Mahfuz</div>
+                    <div class="text-[11px] text-slate-500">ID: 0432310005101057 &bull; CSE 422</div>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-blue-700 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                    M
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: REAL-LIFE LOAN APPLICATION FORM     -->
+        <!-- ========================================== -->
+        <div id="view-application" class="space-y-5">
+
+            <!-- Quick Action Top Bar -->
+            <div class="bg-white border border-slate-200 rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
+                <div class="flex items-center space-x-2 text-xs text-slate-600">
+                    <i class="fa-solid fa-bolt text-amber-500"></i>
+                    <span class="font-semibold text-slate-900">Quick Test Cases:</span>
+                    <span>Load sample profiles for instant evaluation</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="loadSample('approved')" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-lg text-xs font-semibold transition-colors flex items-center space-x-1">
+                        <i class="fa-solid fa-check text-emerald-600"></i>
+                        <span>Sample: Eligible Candidate (Clean CIB)</span>
+                    </button>
+                    <button type="button" onclick="loadSample('rejected')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-lg text-xs font-semibold transition-colors flex items-center space-x-1">
+                        <i class="fa-solid fa-xmark text-rose-600"></i>
+                        <span>Sample: Defaulter Candidate (CIB Alert)</span>
+                    </button>
+                    <button type="button" onclick="resetForm()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg text-xs font-medium transition-colors">
+                        Clear Form
+                    </button>
+                </div>
+            </div>
+
+            <!-- Two-Column Grid: Form Left (7 cols), Decision Output Right (5 cols) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+                <!-- Left Column: Modern Bank Form -->
+                <div class="lg:col-span-7 bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-6">
+                    
+                    <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-bold text-slate-900">Loan Origination Application</h2>
+                            <p class="text-xs text-slate-500">Fill in the borrower's verified profile and credit requirements.</p>
+                        </div>
+                        <span class="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded border border-slate-200">
+                            Form Ref: LN-2026-BD
+                        </span>
+                    </div>
+
+                    <form id="loanForm" onsubmit="submitApplication(event)" class="space-y-6">
+
+                        <!-- SECTION 1: APPLICANT IDENTITY & DEMOGRAPHICS -->
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 rounded bg-blue-700 text-white flex items-center justify-center text-xs font-bold">1</div>
+                                <span class="text-xs font-bold text-slate-800 uppercase tracking-wide">Borrower Profile & Identity</span>
+                            </div>
+
+                            <!-- NID, Full Name & Contact -->
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="text-xs font-medium text-slate-700">National ID (NID)</label>
+                                        <!-- CIB Badge with Interactive Hover Tooltip -->
+                                        <div class="relative group cursor-help">
+                                            <span id="cibBadge" class="text-[10px] text-emerald-700 font-semibold bg-emerald-50 hover:bg-emerald-100 px-1.5 py-0.5 rounded border border-emerald-200 flex items-center space-x-1 transition-colors">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                <span>CIB</span>
+                                                <i class="fa-solid fa-circle-info text-[9px] text-emerald-600"></i>
+                                            </span>
+                                            <!-- Tooltip Popup -->
+                                            <div class="absolute bottom-full right-0 mb-1.5 hidden group-hover:flex flex-col items-center z-30 pointer-events-none">
+                                                <div id="cibTooltipText" class="bg-slate-900 text-white text-[11px] font-medium py-1 px-2.5 rounded-md shadow-lg whitespace-nowrap">
+                                                    Credit Information Bureau (Bangladesh Bank) &bull; Clean Record
+                                                </div>
+                                                <div class="w-2 h-2 bg-slate-900 rotate-45 -mt-1"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="text" id="nidInput" placeholder="Enter NID Number" value="19942691234567890" oninput="autoSyncCIB()" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-600">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Applicant Full Name</label>
+                                    <input type="text" id="ApplicantName" value="Md. Mahfuzur Rahman" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-600">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Mobile Contact Number</label>
+                                    <input type="text" id="ApplicantMobile" value="01712-345678" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-600">
+                                </div>
+                            </div>
+
+                            <!-- Segmented Pill Selectors for Gender, Marital Status & Dependents -->
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <!-- Gender -->
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Gender</label>
+                                    <input type="hidden" id="Gender" value="Male">
+                                    <div id="group-Gender" class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
+                                        <button type="button" onclick="setOption('Gender', 'Male', 'group-Gender')" data-value="Male" class="py-1.5 text-xs font-semibold rounded-md bg-white text-blue-700 shadow-xs border border-blue-600">Male</button>
+                                        <button type="button" onclick="setOption('Gender', 'Female', 'group-Gender')" data-value="Female" class="py-1.5 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900">Female</button>
+                                    </div>
+                                </div>
+
+                                <!-- Marital Status -->
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Marital Status</label>
+                                    <input type="hidden" id="Married" value="Yes">
+                                    <div id="group-Married" class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
+                                        <button type="button" onclick="setOption('Married', 'Yes', 'group-Married')" data-value="Yes" class="py-1.5 text-xs font-semibold rounded-md bg-white text-blue-700 shadow-xs border border-blue-600">Married</button>
+                                        <button type="button" onclick="setOption('Married', 'No', 'group-Married')" data-value="No" class="py-1.5 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900">Single</button>
+                                    </div>
+                                </div>
+
+                                <!-- Dependents -->
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Family Dependents</label>
+                                    <input type="hidden" id="Dependents" value="0">
+                                    <div id="group-Dependents" class="grid grid-cols-4 gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-center">
+                                        <button type="button" onclick="setOption('Dependents', '0', 'group-Dependents')" data-value="0" class="py-1.5 text-xs font-semibold rounded-md bg-white text-blue-700 shadow-xs border border-blue-600">0</button>
+                                        <button type="button" onclick="setOption('Dependents', '1', 'group-Dependents')" data-value="1" class="py-1.5 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900">1</button>
+                                        <button type="button" onclick="setOption('Dependents', '2', 'group-Dependents')" data-value="2" class="py-1.5 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900">2</button>
+                                        <button type="button" onclick="setOption('Dependents', '3', 'group-Dependents')" data-value="3" class="py-1.5 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900">3+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Education & Employment -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <!-- Education -->
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Education Level</label>
+                                    <input type="hidden" id="Education" value="Graduate">
+                                    <div id="group-Education" class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
+                                        <button type="button" onclick="setOption('Education', 'Graduate', 'group-Education')" data-value="Graduate" class="py-1.5 text-xs font-semibold rounded-md bg-white text-blue-700 shadow-xs border border-blue-600">Graduate</button>
+                                        <button type="button" onclick="setOption('Education', 'Not Graduate', 'group-Education')" data-value="Not Graduate" class="py-1.5 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900">Not Graduate</button>
+                                    </div>
+                                </div>
+
+                                <!-- Employment Type -->
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Employment Type</label>
+                                    <input type="hidden" id="Self_Employed" value="No">
+                                    <div id="group-Self_Employed" class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200">
+                                        <button type="button" onclick="setOption('Self_Employed', 'No', 'group-Self_Employed')" data-value="No" class="py-1.5 text-xs font-semibold rounded-md bg-white text-blue-700 shadow-xs border border-blue-600">Salaried Job</button>
+                                        <button type="button" onclick="setOption('Self_Employed', 'Yes', 'group-Self_Employed')" data-value="Yes" class="py-1.5 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900">Self-Employed / Business</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 2: FINANCIAL INCOMES & LOAN REQUEST (WITH LIVE CALCULATOR) -->
+                        <div class="space-y-4 pt-1 border-t border-slate-100">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 rounded bg-slate-800 text-white flex items-center justify-center text-xs font-bold">2</div>
+                                <span class="text-xs font-bold text-slate-800 uppercase tracking-wide">Financial Capability & Loan Request</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <!-- Applicant Income -->
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Applicant Monthly Income (৳)</label>
+                                    <input type="number" id="ApplicantIncome" value="6000" oninput="updateLiveCalc()" required min="100" step="100" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-600">
+                                    <span class="text-[10px] text-slate-400 mt-0.5 block">Standard monthly salary or verified business income</span>
+                                </div>
+
+                                <!-- Coapplicant Income -->
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Co-applicant Monthly Income (৳)</label>
+                                    <input type="number" id="CoapplicantIncome" value="2000" oninput="updateLiveCalc()" required min="0" step="100" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-600">
+                                    <span class="text-[10px] text-slate-400 mt-0.5 block">Spouse or family member contributing income</span>
+                                </div>
+
+                                <!-- Loan Amount -->
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Loan Amount Requested (৳ in Thousands)</label>
+                                    <input type="number" id="LoanAmount" value="130" oninput="updateLiveCalc()" required min="5" step="1" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-600">
+                                    <span class="text-[10px] text-blue-600 font-semibold mt-0.5 block" id="loanAmountFormatted">130 = ৳ 1,30,000</span>
+                                </div>
+
+                                <!-- Loan Term -->
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Loan Repayment Term</label>
+                                    <select id="Loan_Amount_Term" onchange="updateLiveCalc()" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-600">
+                                        <option value="120">10 Years (120 Months)</option>
+                                        <option value="180">15 Years (180 Months)</option>
+                                        <option value="240">20 Years (240 Months)</option>
+                                        <option value="360" selected>30 Years (360 Months)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 3: COLLATERAL / PROPERTY LOCATION -->
+                        <div class="space-y-4 pt-1 border-t border-slate-100">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 rounded bg-slate-800 text-white flex items-center justify-center text-xs font-bold">3</div>
+                                <span class="text-xs font-bold text-slate-800 uppercase tracking-wide">Collateral Property Location</span>
+                            </div>
+
+                            <!-- Hidden Credit_History input (Auto-managed from NID) -->
+                            <input type="hidden" id="Credit_History" value="1.0">
+
+                            <!-- Property Location Segmented Selector -->
+                            <div>
+                                <label class="block text-xs font-medium text-slate-700 mb-1">Property Area</label>
+                                <input type="hidden" id="Property_Area" value="Urban">
+                                <div id="group-Property_Area" class="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-center max-w-md">
+                                    <button type="button" onclick="setOption('Property_Area', 'Urban', 'group-Property_Area')" data-value="Urban" class="py-1.5 text-xs font-semibold rounded-md bg-white text-blue-700 shadow-xs border border-blue-600">Urban</button>
+                                    <button type="button" onclick="setOption('Property_Area', 'Semiurban', 'group-Property_Area')" data-value="Semiurban" class="py-1.5 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900">Semiurban</button>
+                                    <button type="button" onclick="setOption('Property_Area', 'Rural', 'group-Property_Area')" data-value="Rural" class="py-1.5 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900">Rural</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Final Action Submit Button -->
+                        <div class="pt-3">
+                            <button type="submit" id="submitBtn" class="w-full py-3 px-4 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-xl shadow-sm text-sm transition-all flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-check-double text-sm"></i>
+                                <span>Check Eligibility & Generate Risk Assessment</span>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- Right Column: Clean Decision Outcome Panel -->
+                <div class="lg:col-span-5 space-y-4">
+
+                    <!-- Default Prompt (Before Submission) -->
+                    <div id="resultPlaceholder" class="bg-white border border-slate-200 rounded-xl p-8 text-center min-h-[420px] flex flex-col items-center justify-center shadow-sm">
+                        <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-3">
+                            <i class="fa-regular fa-clipboard"></i>
+                        </div>
+                        <h3 class="text-sm font-semibold text-slate-800 mb-1">Awaiting Application Submission</h3>
+                        <p class="text-xs text-slate-500 max-w-xs mb-4">
+                            Fill in the applicant profile on the left or use the <strong>Quick Test Cases</strong> at the top, then submit to generate risk evaluation.
+                        </p>
+                        <button type="button" onclick="fillAndVerifyNid('19942691234567890'); document.getElementById('loanForm').requestSubmit();" class="text-xs text-blue-700 font-semibold hover:underline flex items-center space-x-1">
+                            <span>Execute sample eligible applicant evaluation &rarr;</span>
+                        </button>
+                    </div>
+
+                    <!-- Evaluation Outcome (After Submission) -->
+                    <div id="resultCard" class="hidden bg-white border rounded-xl p-6 shadow-sm space-y-5">
+                        
+                        <!-- Simple Decision Banner -->
+                        <div id="statusBox" class="p-4 rounded-xl flex items-center space-x-3.5 bg-emerald-50 text-emerald-900 border border-emerald-200">
+                            <div id="statusIcon" class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white bg-emerald-600">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div>
+                                <div class="text-[11px] font-semibold uppercase tracking-wider opacity-75" id="statusLabel">DECISION RESULT</div>
+                                <div class="text-lg font-bold" id="statusText">Loan Approved</div>
+                            </div>
+                        </div>
+
+                        <!-- 2 Key Stats -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+                                <div class="text-[11px] text-slate-500 font-medium">Approval Score</div>
+                                <div class="text-2xl font-bold text-slate-900 mt-0.5" id="scoreText">--%</div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+                                <div class="text-[11px] text-slate-500 font-medium">Risk Tier</div>
+                                <div class="text-sm font-bold mt-1.5" id="riskText">--</div>
+                            </div>
+                        </div>
+
+                        <!-- Financial Summary -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-3.5 space-y-2 text-xs">
+                            <div class="font-semibold text-slate-800 border-b border-slate-200 pb-1.5 flex justify-between items-center">
+                                <span>Verified Financial Indicators</span>
+                                <span class="text-[10px] text-slate-400">Monthly</span>
+                            </div>
+                            <div class="flex justify-between text-slate-600">
+                                <span>Total Household Income:</span>
+                                <span class="font-semibold text-slate-900" id="resTotalIncome">৳ 0</span>
+                            </div>
+                            <div class="flex justify-between text-slate-600">
+                                <span>Estimated Monthly EMI:</span>
+                                <span class="font-semibold text-slate-900" id="resEMI">৳ 0 / month</span>
+                            </div>
+                            <div class="flex justify-between text-slate-600">
+                                <span>Debt-to-Income (DTI) Ratio:</span>
+                                <span class="font-semibold text-slate-900" id="resDTI">0%</span>
+                            </div>
+                        </div>
+
+                        <!-- Plain English Assessment Notes -->
+                        <div>
+                            <div class="text-xs font-semibold text-slate-700 mb-2">Key Risk Assessment Notes:</div>
+                            <ul id="reasonList" class="space-y-1.5 text-xs text-slate-600">
+                                <!-- Populated dynamically -->
+                            </ul>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                            <span>Engine: PyTorch Deep MLP</span>
+                            <span>Latency: &lt;10ms</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div>CrediNet Bank &bull; Automated Retail Loan Processing System</div>
+            <div>&copy; 2026 CrediNet Banking Portal. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Interaction Logic -->
+    <script>
+        // Segmented Button Helper
+        function setOption(fieldId, value, groupContainerId) {
+            document.getElementById(fieldId).value = value;
+            const container = document.getElementById(groupContainerId);
+            if (container) {
+                container.querySelectorAll('button').forEach(btn => {
+                    if (btn.getAttribute('data-value') === value) {
+                        btn.className = "py-1.5 text-xs font-semibold rounded-md bg-white text-blue-700 shadow-xs border border-blue-600";
+                    } else {
+                        btn.className = "py-1.5 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900";
+                    }
+                });
+            }
+            updateLiveCalc();
+        }
+
+        // Format Loan Amount Helper
+        function updateLiveCalc() {
+            const loanAmount = parseFloat(document.getElementById('LoanAmount').value) || 0;
+            const el = document.getElementById('loanAmountFormatted');
+            if (el) {
+                el.textContent = `${loanAmount} = ৳ ${(loanAmount * 1000).toLocaleString()}`;
+            }
+        }
+
+        // Auto-sync CIB based on NID
+        function autoSyncCIB() {
+            const nid = (document.getElementById('nidInput').value || '').trim();
+            const creditSelect = document.getElementById('Credit_History');
+            const cibBadge = document.getElementById('cibBadge');
+            const tooltipText = document.getElementById('cibTooltipText');
+
+            // In our verified banking database:
+            // 19942691234567890 is the verified clean credit applicant (1.0)
+            // Any altered, invalid, or other NID has no verified good credit history (0.0)
+            if (nid === '19942691234567890') {
+                creditSelect.value = "1.0";
+                if (cibBadge) {
+                    cibBadge.className = "text-[10px] text-emerald-700 font-semibold bg-emerald-50 hover:bg-emerald-100 px-1.5 py-0.5 rounded border border-emerald-200 flex items-center space-x-1 transition-colors";
+                    cibBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>CIB</span><i class="fa-solid fa-circle-info text-[9px] text-emerald-600"></i>`;
+                }
+                if (tooltipText) {
+                    tooltipText.innerHTML = `Credit Information Bureau (Bangladesh Bank) &bull; Clean Record`;
+                }
+            } else {
+                creditSelect.value = "0.0";
+                if (cibBadge) {
+                    cibBadge.className = "text-[10px] text-rose-700 font-semibold bg-rose-50 hover:bg-rose-100 px-1.5 py-0.5 rounded border border-rose-200 flex items-center space-x-1 transition-colors";
+                    cibBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>CIB Alert</span><i class="fa-solid fa-triangle-exclamation text-[9px] text-rose-600"></i>`;
+                }
+                if (tooltipText) {
+                    tooltipText.innerHTML = `Credit Information Bureau (Bangladesh Bank) &bull; Unverified / Defaulter History`;
+                }
+            }
+        }
+
+        // Quick 1-Click Profile Loader
+        function loadSample(type) {
+            if (type === 'approved') {
+                document.getElementById('nidInput').value = '19942691234567890';
+                document.getElementById('ApplicantName').value = 'Md. Mahfuzur Rahman';
+                document.getElementById('ApplicantMobile').value = '01712-345678';
+                setOption('Gender', 'Male', 'group-Gender');
+                setOption('Married', 'Yes', 'group-Married');
+                setOption('Dependents', '0', 'group-Dependents');
+                setOption('Education', 'Graduate', 'group-Education');
+                setOption('Self_Employed', 'No', 'group-Self_Employed');
+                setOption('Property_Area', 'Urban', 'group-Property_Area');
+                document.getElementById('ApplicantIncome').value = '6000';
+                document.getElementById('CoapplicantIncome').value = '2000';
+                document.getElementById('LoanAmount').value = '130';
+                document.getElementById('Loan_Amount_Term').value = '360';
+                document.getElementById('Credit_History').value = '1.0';
+            } else {
+                document.getElementById('nidInput').value = '19882699876543210';
+                document.getElementById('ApplicantName').value = 'Kamal Hossain';
+                document.getElementById('ApplicantMobile').value = '01823-987654';
+                setOption('Gender', 'Male', 'group-Gender');
+                setOption('Married', 'No', 'group-Married');
+                setOption('Dependents', '2', 'group-Dependents');
+                setOption('Education', 'Not Graduate', 'group-Education');
+                setOption('Self_Employed', 'Yes', 'group-Self_Employed');
+                setOption('Property_Area', 'Rural', 'group-Property_Area');
+                document.getElementById('ApplicantIncome').value = '1800';
+                document.getElementById('CoapplicantIncome').value = '0';
+                document.getElementById('LoanAmount').value = '280';
+                document.getElementById('Loan_Amount_Term').value = '360';
+                document.getElementById('Credit_History').value = '0.0';
+            }
+            autoSyncCIB();
+            updateLiveCalc();
+        }
+
+        function resetForm() {
+            document.getElementById('loanForm').reset();
+            const nidEl = document.getElementById('nidInput');
+            if (nidEl) nidEl.value = '19942691234567890';
+            setOption('Gender', 'Male', 'group-Gender');
+            setOption('Married', 'Yes', 'group-Married');
+            setOption('Dependents', '0', 'group-Dependents');
+            setOption('Education', 'Graduate', 'group-Education');
+            setOption('Self_Employed', 'No', 'group-Self_Employed');
+            setOption('Property_Area', 'Urban', 'group-Property_Area');
+            autoSyncCIB();
+            document.getElementById('resultCard').classList.add('hidden');
+            document.getElementById('resultPlaceholder').classList.remove('hidden');
+            updateLiveCalc();
+        }
+
+        async function submitApplication(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<span>Evaluating with PyTorch Deep MLP...</span>`;
+
+            // Auto-sync CIB based on NID
+            autoSyncCIB();
+
+            const payload = {
+                Gender: document.getElementById('Gender').value,
+                Married: document.getElementById('Married').value,
+                Dependents: document.getElementById('Dependents').value,
+                Education: document.getElementById('Education').value,
+                Self_Employed: document.getElementById('Self_Employed').value,
+                ApplicantIncome: parseFloat(document.getElementById('ApplicantIncome').value) || 0,
+                CoapplicantIncome: parseFloat(document.getElementById('CoapplicantIncome').value) || 0,
+                LoanAmount: parseFloat(document.getElementById('LoanAmount').value) || 0,
+                Loan_Amount_Term: parseFloat(document.getElementById('Loan_Amount_Term').value) || 360,
+                Credit_History: parseFloat(document.getElementById('Credit_History').value),
+                Property_Area: document.getElementById('Property_Area').value
+            };
+
+            try {
+                const res = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Server error');
+                displayResult(data);
+            } catch (err) {
+                alert("Error: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        function displayResult(data) {
+            document.getElementById('resultPlaceholder').classList.add('hidden');
+            const card = document.getElementById('resultCard');
+            card.classList.remove('hidden');
+
+            const isApproved = data.loan_status === "APPROVED";
+            const percent = (data.approval_probability * 100).toFixed(0);
+
+            const statusBox = document.getElementById('statusBox');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+            const scoreText = document.getElementById('scoreText');
+            const riskText = document.getElementById('riskText');
+
+            scoreText.textContent = `${percent}%`;
+
+            if (isApproved) {
+                card.className = "bg-white border border-emerald-200 rounded-xl p-6 shadow-sm space-y-5";
+                statusBox.className = "p-4 rounded-xl flex items-center space-x-3.5 bg-emerald-50 text-emerald-900 border border-emerald-200";
+                statusIcon.className = "w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white bg-emerald-600";
+                statusIcon.innerHTML = `<i class="fa-solid fa-check"></i>`;
+                statusText.textContent = "Loan Application Approved";
+                riskText.className = "text-sm font-bold text-emerald-700 mt-1";
+                riskText.textContent = "Low Risk Tier";
+            } else {
+                card.className = "bg-white border border-rose-200 rounded-xl p-6 shadow-sm space-y-5";
+                statusBox.className = "p-4 rounded-xl flex items-center space-x-3.5 bg-rose-50 text-rose-900 border border-rose-200";
+                statusIcon.className = "w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white bg-rose-600";
+                statusIcon.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+                statusText.textContent = "Loan Application Rejected";
+                riskText.className = "text-sm font-bold text-rose-700 mt-1";
+                riskText.textContent = "High Risk Tier";
+            }
+
+            document.getElementById('resTotalIncome').textContent = `৳ ${data.financial_summary.total_income.toLocaleString()}`;
+            document.getElementById('resEMI').textContent = `৳ ${data.financial_summary.estimated_emi.toLocaleString()} / month`;
+            document.getElementById('resDTI').textContent = `${data.financial_summary.dti_ratio}%`;
+
+            const list = document.getElementById('reasonList');
+            list.innerHTML = '';
+            data.decision_factors.forEach(reason => {
+                const li = document.createElement('li');
+                li.className = "flex items-start space-x-2";
+                li.innerHTML = `<span class="text-blue-600 font-bold">&bull;</span><span>${reason}</span>`;
+                list.appendChild(li);
+            });
+        }
+
+        // Initialize Live Calculation on Load
+        updateLiveCalc();
+    </script>
+</body>
+</html>

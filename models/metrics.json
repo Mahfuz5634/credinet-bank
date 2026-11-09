@@ -1,0 +1,38 @@
+{
+    "shallow": {
+        "accuracy": 83.74,
+        "precision": 84.21,
+        "recall": 94.12,
+        "f1_score": 88.89,
+        "roc_auc": 82.35,
+        "confusion_matrix": [
+            [
+                23,
+                15
+            ],
+            [
+                5,
+                80
+            ]
+        ]
+    },
+    "deep": {
+        "accuracy": 85.37,
+        "precision": 84.54,
+        "recall": 96.47,
+        "f1_score": 90.11,
+        "roc_auc": 83.0,
+        "confusion_matrix": [
+            [
+                23,
+                15
+            ],
+            [
+                3,
+                82
+            ]
+        ]
+    },
+    "test_samples": 123,
+    "total_samples": 614
+}
